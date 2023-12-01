@@ -13,7 +13,7 @@
 **DOT** unifies point tracking and optical flow techniques:
 - It tracks all pixels in a frame simultaneously
 - It retains the robustness to occlusions and the accuracy of point tracking techniques
-- It retains a comparable speed to optical flow techniques
+- It runs at a comparable speed to optical flow techniques
 
 
 ## Citation
