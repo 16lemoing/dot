@@ -1,8 +1,8 @@
 # Dense Optical Tracking: Connecting the Dots
 
 
-[Guillaume Le Moing](https://16lemoing.github.io/)
-[Jean Ponce](https://www.di.ens.fr/~ponce/)
+[Guillaume Le Moing](https://16lemoing.github.io/),
+[Jean Ponce](https://www.di.ens.fr/~ponce/),
 [Cordelia Schmid](https://thoth.inrialpes.fr/~schmid/)
 <br>
 
@@ -20,7 +20,7 @@
 If you find this code useful, please consider citing:
 ```
 @article{lemoing2023dense,
-  title={Dense Optical Tracking: Connecting the Dots,
+  title={Dense Optical Tracking: Connecting the Dots},
   author={Guillaume Le Moing and Jean Ponce and Cordelia Schmid},
   journal={arXiv preprint},
   year={2023}
