@@ -6,7 +6,7 @@
 [Cordelia Schmid](https://thoth.inrialpes.fr/~schmid/)
 <br>
 
-#### [Project Page](https://16lemoing.github.io/dot) | [Paper](https://arxiv.org/abs) | [Video](https://www.youtube.com/watch?v=H0Rvq0OL87Y) | [BibTeX](#citation)
+#### [Project Page](https://16lemoing.github.io/dot) | [Paper](https://arxiv.org/abs/2312.00786) | [Video](https://www.youtube.com/watch?v=H0Rvq0OL87Y) | [BibTeX](#citation)
 
 <p align="center"><img width="85%" src="assets/teaser.gif" /></p>
 
