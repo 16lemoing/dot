@@ -15,9 +15,11 @@
 - It retains the robustness to occlusions and the accuracy of point tracking techniques
 - It enjoys the spatial consistency and runs at a comparable speed to optical flow techniques
 
+### 🎅 Release Plan
+The DOT code is set to unwrap just in time for Christmas 🎄.
 
 ## Citation
-If you find this code useful, please consider citing:
+Please note that any use of the code in a publication must explicitly refer to:
 ```
 @article{lemoing2023dense,
   title={Dense Optical Tracking: Connecting the Dots},
