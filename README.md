@@ -64,10 +64,11 @@ wget -P checkpoints https://huggingface.co/models/16lemoing/dot/resolve/main/mov
 
 Download demo data.
 ```
-wget -P datasets/demo https://huggingface.co/models/16lemoing/dot/resolve/main/demo.zip
+wget -P datasets https://huggingface.co/models/16lemoing/dot/resolve/main/demo.zip
+unzip datasets/demo.zip -d datasets/
 ```
 
-### :spaghetti: Spaghetti 
+### :spaghetti: - Spaghetti 
 
 Produce videos from the teaser figure.
 ```
@@ -75,27 +76,29 @@ python demo.py --visualization_modes spaghetti_last_static --video_path orange.m
 python demo.py --visualization_modes spaghetti_last_static --video_path treadmill.mp4
 ```
 
-https://16lemoing.github.io/content/media/dot/umbrella.mp4
+https://github.com/16lemoing/dot/assets/32103788/82b888b8-3bc4-4ce8-9278-1adf39eb842a
 
 ```
 python demo.py --visualization_modes spaghetti_last_static --video_path umbrella.mp4
 ```
 
-https://16lemoing.github.io/content/media/dot/skateboard.mp4
+https://github.com/16lemoing/dot/assets/32103788/088cc2d6-0cd3-449c-a42a-58f4371427d0
 
 ```
 python demo.py --visualization_modes spaghetti_first_last_mask --video_path skateboard.mp4 --mask_path skateboard.png
 ```
 
-### :rainbow: Overlay 
+### :rainbow: - Overlay 
 
-https://16lemoing.github.io/content/media/dot/cartwheel.mp4
+https://github.com/16lemoing/dot/assets/32103788/7cc812c1-67fe-4710-9385-6675dd95cbf9
+
 
 ```
 python demo.py --visualization_modes overlay --video_path cartwheel.mp4
 ```
 
-https://16lemoing.github.io/content/media/dot/varanus.mp4
+
+https://github.com/16lemoing/dot/assets/32103788/580ef7eb-4ae0-4174-9d62-9cfb62651c99
 
 ```
 python demo.py --visualization_modes overlay_stripes_mask --video_path varanus.mp4 --mask_path varanus.png
@@ -146,8 +149,6 @@ unzip datasets/kubric/movi_f/ground_truth.zip -d datasets/kubric/movi_f/
 unzip datasets/kubric/movi_f/cotracker.zip -d datasets/kubric/movi_f/
 ```
 </details>
-
-<br>
 
 <details>
 <summary>Or run preprocessing steps yourself.</summary>
