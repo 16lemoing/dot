@@ -1,0 +1,8 @@
+{
+  "name": "raft",
+  "patch_size": 4,
+  "num_iter": 4,
+  "refine_alpha": true,
+  "norm_fnet": "instance",
+  "norm_cnet": "instance"
+}
