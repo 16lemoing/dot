@@ -55,16 +55,16 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
 
 ### Download Checkpoints
 ```
-wget -P checkpoints https://huggingface.co/models/16lemoing/dot/resolve/main/cvo_raft_patch_8.pth
-wget -P checkpoints https://huggingface.co/models/16lemoing/dot/resolve/main/movi_f_raft_patch_4_alpha.pth
-wget -P checkpoints https://huggingface.co/models/16lemoing/dot/resolve/main/movi_f_cotracker_patch_4_wind_8.pth
+wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/cvo_raft_patch_8.pth
+wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_raft_patch_4_alpha.pth
+wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker_patch_4_wind_8.pth
 ```
 
 ## Demo
 
 Download demo data.
 ```
-wget -P datasets https://huggingface.co/models/16lemoing/dot/resolve/main/demo.zip
+wget -P datasets https://huggingface.co/16lemoing/dot/resolve/main/demo.zip
 unzip datasets/demo.zip -d datasets/
 ```
 
