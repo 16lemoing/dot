@@ -56,16 +56,19 @@ class PointTracker(nn.Module):
 
         # Track batches of points
         tracks = []
+        motion_boundaries = {}
         for _ in tqdm(range(N // S), desc="Track batch of points", leave=False):
             src_points = []
             for src_step, src_samples in enumerate(samples_per_step):
                 if src_samples == 0:
                     continue
-                tgt_step = src_step - 1 if src_step > 0 else src_step + 1
-                data = {"src_frame": video[:, src_step], "tgt_frame": video[:, tgt_step]}
-                pred = self.optical_flow_estimator(data, mode="motion_boundaries", **kwargs)
-                motion_boundaries = pred["motion_boundaries"]
-                src_points.append(sample_points(src_step, motion_boundaries[0], src_samples))
+                if not src_step in motion_boundaries:
+                    tgt_step = src_step - 1 if src_step > 0 else src_step + 1
+                    data = {"src_frame": video[:, src_step], "tgt_frame": video[:, tgt_step]}
+                    pred = self.optical_flow_estimator(data, mode="motion_boundaries", **kwargs)
+                    motion_boundaries[src_step] = pred["motion_boundaries"]
+                src_boundaries = motion_boundaries[src_step]
+                src_points.append(sample_points(src_step, src_boundaries[0], src_samples))
             src_points = torch.cat(src_points, dim=0)[None]
             traj, vis = self.model(video, src_points, backward_tracking)
             tracks.append(torch.cat([traj, vis[..., None]], dim=-1))
