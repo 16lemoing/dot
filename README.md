@@ -189,6 +189,10 @@ and PyTorch3D is licensed under a BSD License.
 
 We actively encourage contributions. Want to feature a cool application which builds upon DOT, or add support to another point tracker / optical flow model? Don't hesitate to open an issue to discuss about it.
 
+## Acknowledgments
+
+We want to thank [CoTracker](https://github.com/facebookresearch/co-tracker), [RAFT](https://github.com/princeton-vl/RAFT), [AccFlow](https://github.com/mulns/AccFlow), [TAP](https://github.com/google-deepmind/tapnet), and [Kubric](https://github.com/google-research/kubric) for publicly releasing their code, models and data.
+
 ## Citation
 Please note that any use of the code in a publication must explicitly refer to:
 ```
