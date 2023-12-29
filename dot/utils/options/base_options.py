@@ -56,7 +56,7 @@ class BaseOptions:
         parser = self.initialize(parser)
         args = parser.parse_args()
         if args.datetime is None:
-            args.datetime = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+            args.datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         name = f"{args.datetime}_{args.name}_{args.model}"
         if hasattr(args, 'split'):
             name += f"_{args.split}"
