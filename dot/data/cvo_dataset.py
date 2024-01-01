@@ -56,6 +56,8 @@ class CVO_sampler_lmdb:
                 if "flow" in key and self.split in ["clean", "final"]:  # Convert Int to Floating
                     value = value.astype(np.float32)
                     value = (value - 2 ** 15) / 128.0
+                if "imgs" in k:
+                    k = "imgs"
                 sample[k] = value
         return sample
 
