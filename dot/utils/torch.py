@@ -39,7 +39,7 @@ def differentiate(mask):
 
 def sample_points(step, boundaries, num_samples):
     H, W = boundaries.shape
-    boundary_points = sample_boundary_points(step, boundaries, num_samples // 2)
+    boundary_points, _ = sample_mask_points(step, boundaries, num_samples // 2)
     num_boundary_points = boundary_points.shape[0]
     num_random_points = num_samples - num_boundary_points
     random_points = sample_random_points(step, H, W, num_random_points)
@@ -48,16 +48,16 @@ def sample_points(step, boundaries, num_samples):
     return points
 
 
-def sample_boundary_points(step, boundaries, num_points):
-    num_nonzero = int(boundaries.sum())
-    i, j = torch.nonzero(boundaries, as_tuple=True)
+def sample_mask_points(step, mask, num_points):
+    num_nonzero = int(mask.sum())
+    i, j = torch.nonzero(mask, as_tuple=True)
     if num_points < num_nonzero:
-        mask = np.random.choice(num_nonzero, size=num_points, replace=False)
-        i, j = i[mask], j[mask]
+        sample = np.random.choice(num_nonzero, size=num_points, replace=False)
+        i, j = i[sample], j[sample]
     t = torch.ones_like(i) * step
     x, y = j, i
     points = torch.stack((t, x, y), dim=-1)  # [num_points, 3]
-    return points.float()
+    return points.float(), (i, j)
 
 
 def sample_random_points(step, height, width, num_points):

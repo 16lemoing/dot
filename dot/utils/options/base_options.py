@@ -43,8 +43,8 @@ class BaseOptions:
         parser.add_argument("--refiner_path", type=str, default="checkpoints/movi_f_raft_patch_4_alpha.pth")
 
         # Point tracker
-        parser.add_argument("--tracker_config", type=str, default="configs/cotracker_patch_4_wind_8.json")
-        parser.add_argument("--tracker_path", type=str, default="checkpoints/movi_f_cotracker_patch_4_wind_8.pth")
+        parser.add_argument("--tracker_config", type=str, default="configs/cotracker2_patch_4_wind_8.json")
+        parser.add_argument("--tracker_path", type=str, default="checkpoints/movi_f_cotracker2_patch_4_wind_8.pth")
         parser.add_argument("--sample_mode", type=str, default="all", choices=["all", "first", "last"])
 
         # Interpolation

@@ -15,6 +15,10 @@
 - It retains the robustness to occlusions and the accuracy of point tracking techniques.
 - It enjoys the spatial consistency and runs at a comparable speed to optical flow techniques.
 
+### News 📣
+- [January 1st, 2024] We now support CoTracker2: DOT is up to 2x faster!
+
+
 ## Installation
 
 ### Set Up Environment
@@ -58,6 +62,7 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/cvo_raft_patch_8.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_raft_patch_4_alpha.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker_patch_4_wind_8.pth
+wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker2_patch_4_wind_8.pth
 ```
 
 ## Demo
@@ -107,24 +112,66 @@ python demo.py --visualization_modes overlay_stripes_mask --video_path varanus.m
 ## Evaluation
 
 ### Data Preprocessing
-Download Kubric-CVO test data.
+
+<details>
+<summary>Download Kubric-CVO test data.</summary>
+
 ```
 wget -P datasets/kubric/cvo https://huggingface.co/datasets/16lemoing/cvo/resolve/main/cvo_test.lmdb
 wget -P datasets/kubric/cvo https://huggingface.co/datasets/16lemoing/cvo/resolve/main/cvo_test_extended.lmdb
 ```
-Download TAP test data.
+</details>
+
+<details>
+<summary>Download TAP test data.</summary>
+
 ```
 wget -P datasets/tap https://storage.googleapis.com/dm-tapnet/tapvid_davis.zip
 wget -P datasets/tap https://storage.googleapis.com/dm-tapnet/tapvid_kinetics.zip
 wget -P datasets/tap https://storage.googleapis.com/dm-tapnet/tapvid_rgb_stacking.zip
 unzip "datasets/tap/*.zip" -d datasets/tap/
 ```
+</details>
+
 
 ### Compute Evaluation Metrics
 ```
 python test_cvo.py --split {clean|final|extended}
 python test_tap.py --split {davis|kinetics|rgb_stacking}
 ```
+
+### Benchmarking
+
+Results reproduced with this codebase on **Kubric-CVO**.
+
+<details>
+<summary>Detailed metrics.</summary>
+
+We compute the dense motion between the first and last frames of videos and report:
+* the end point error (EPE) of flows
+* the intersection over union (IoU) of occluded regions
+* the average inference time per video (in seconds) on a NVIDIA V100 GPU
+</details>
+
+<details>
+<summary>Command line for each method.</summary>
+
+```
+python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
+python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
+python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+```
+</details>
+
+| Method                   | EPE &darr; (final / extended) | IoU &uarr; (final / extended) | Time &darr; (final / extended) |
+|--------------------------|-------------------------------|-------------------------------|--------------------------------|
+| CoTracker                | 1.45 / 5.10                   | 75.0 / 70.3                   | 177 / 1289                     |
+| CoTracker2               | 1.47 / 5.45                   | 77.9 / 69.2                   | 80.2 / 865                     |
+| DOT* (Cotracker + RAFT)  | 1.38 / **4.97**               | 80.2 / **71.2**               | 1.57 / 10.3                    |
+| DOT* (Cotracker2 + RAFT) | **1.37** / 5.11               | **80.3** / 71.1               | **0.82** / **7.02**            |
+
+_* results obtained using N=2048 initial tracks, other speed / performance trade-offs are possible by using different values for N._
 
 ## Training
 
