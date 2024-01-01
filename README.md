@@ -164,12 +164,12 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
 ```
 </details>
 
-| Method                   | EPE &darr; (final / extended) | IoU &uarr; (final / extended) | Time &darr; (final / extended) |
-|--------------------------|-------------------------------|-------------------------------|--------------------------------|
-| CoTracker                | 1.45 / 5.10                   | 75.0 / 70.3                   | 177 / 1289                     |
-| CoTracker2               | 1.47 / 5.45                   | 77.9 / 69.2                   | 80.2 / 865                     |
-| DOT* (Cotracker + RAFT)  | 1.38 / **4.97**               | 80.2 / **71.2**               | 1.57 / 10.3                    |
-| DOT* (Cotracker2 + RAFT) | **1.37** / 5.11               | **80.3** / 71.1               | **0.82** / **7.02**            |
+| Method                   | EPE &darr; <br> (final / extended) | IoU &uarr; <br> (final / extended) | Time &darr; <br> (final / extended) |
+|--------------------------|------------------------------------|------------------------------------|-------------------------------------|
+| CoTracker                | 1.45 / 5.10                        | 75.0 / 70.3                        | 177 / 1289                          |
+| CoTracker2               | 1.47 / 5.45                        | 77.9 / 69.2                        | 80.2 / 865                          |
+| DOT* (Cotracker + RAFT)  | 1.38 / **4.97**                    | 80.2 / **71.2**                    | 1.57 / 10.3                         |
+| DOT* (Cotracker2 + RAFT) | **1.37** / 5.11                    | **80.3** / 71.1                    | **0.82** / **7.02**                 |
 
 _* results obtained using N=2048 initial tracks, other speed / performance trade-offs are possible by using different values for N._
 
