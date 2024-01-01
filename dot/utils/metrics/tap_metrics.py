@@ -2,7 +2,7 @@ import numpy as np
 from typing import Mapping
 
 
-def compute_metrics(gt, pred, query_mode):
+def compute_metrics(gt, pred, time, query_mode):
     query_points = gt["query_points"].cpu().numpy()
     gt_tracks = gt["tracks"][..., :2].permute(0, 2, 1, 3).cpu().numpy()
     gt_occluded = (1 - gt["tracks"][..., 2]).permute(0, 2, 1).cpu().numpy()
@@ -17,6 +17,8 @@ def compute_metrics(gt, pred, query_mode):
         pred_tracks,
         query_mode=query_mode
     )
+
+    metrics["time"] = time
 
     return metrics
 

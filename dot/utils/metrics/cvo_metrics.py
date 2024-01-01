@@ -1,14 +1,15 @@
 import torch
 
 
-def compute_metrics(gt, pred):
+def compute_metrics(gt, pred, time):
     epe_all, epe_occ, epe_vis = get_epe(pred["flow"], gt["flow"], gt["alpha"])
     iou = get_iou(gt["alpha"], pred["alpha"])
     metrics = {
         "epe_all": epe_all.cpu().numpy(),
         "epe_occ": epe_occ.cpu().numpy(),
         "epe_vis": epe_vis.cpu().numpy(),
-        "iou": iou.cpu().numpy()
+        "iou": iou.cpu().numpy(),
+        "time": time
     }
     return metrics
 

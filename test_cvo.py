@@ -15,6 +15,8 @@ from dot.data.cvo_dataset import create_optical_flow_dataset
 def main(args):
     model = create_model(args).cuda()
     dataset = create_optical_flow_dataset(args)
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
 
     metrics = []
     for index, gt in tqdm(enumerate(dataset), total=len(dataset)):
@@ -30,23 +32,33 @@ def main(args):
         gt = to_device(gt, "cuda")
 
         with torch.no_grad():
+            start.record()
             pred = model(gt, mode="flow_from_last_to_first_frame", **vars(args))
+            end.record()
+            torch.cuda.synchronize()
+            time = start.elapsed_time(end) / 1000
 
-        metrics.append(cvo_metrics.compute_metrics(gt, pred))
+        metrics.append(cvo_metrics.compute_metrics(gt, pred, time))
 
         if len(args.plot_indices) > 0:
-            src_frame = gt["video"][0, -1]
-            tgt_frame = gt["video"][0, 0]
-            src_points = pred["src_points"][0]
-            tgt_points = pred["tgt_points"][0]
-            plot_points(src_frame, tgt_frame, src_points, tgt_points, osp.join(args.result_path, f"{index}/points.png"))
             write_video(gt["video"][0], osp.join(args.result_path, f"{index}/video.mp4"))
             write_frame(to_rgb(pred["flow"], "flow")[0], osp.join(args.result_path, f"{index}/pred_flow.png"))
-            write_frame(to_rgb(pred["coarse_flow"], "flow")[0], osp.join(args.result_path, f"{index}/coarse_flow.png"))
             write_frame(to_rgb(gt["flow"], "flow")[0], osp.join(args.result_path, f"{index}/gt_flow.png"))
             write_frame(to_rgb(pred["alpha"], "mask")[0], osp.join(args.result_path, f"{index}/pred_alpha.png"))
             write_frame(to_rgb(gt["alpha"], "mask")[0], osp.join(args.result_path, f"{index}/gt_alpha.png"))
-            write_frame(to_rgb(pred["coarse_alpha"], "mask")[0], osp.join(args.result_path, f"{index}/coarse_alpha.png"))
+            if "src_points" in pred and "tgt_points" in pred:
+                src_frame = gt["video"][0, -1]
+                tgt_frame = gt["video"][0, 0]
+                src_points = pred["src_points"][0]
+                tgt_points = pred["tgt_points"][0]
+                points_path = osp.join(args.result_path, f"{index}/points.png")
+                plot_points(src_frame, tgt_frame, src_points, tgt_points, points_path)
+            if "coarse_flow" in pred:
+                coarse_flow_rgb = to_rgb(pred["coarse_flow"], "flow")[0]
+                write_frame(coarse_flow_rgb, osp.join(args.result_path, f"{index}/coarse_flow.png"))
+            if "coarse_alpha" in pred:
+                coarse_alpha_rgb = to_rgb(pred["coarse_alpha"], "mask")[0]
+                write_frame(coarse_alpha_rgb, osp.join(args.result_path, f"{index}/coarse_alpha.png"))
 
     if len(args.plot_indices) == 0:
         metrics = {k: [m[k] for m in metrics] for k in metrics[0]}
