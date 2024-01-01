@@ -112,7 +112,7 @@ class CoTrackerPredictor(torch.nn.Module):
         if cache_features:
             h, w = self.interp_shape[0], self.interp_shape[1]
             video_ = video.reshape(B * T, C, h, w)
-            video_ = 2 * (video_ / 255.0) - 1.0
+            video_ = 2 * video_ - 1.0
             fmaps_ = self.model.fnet(video_)
             fmaps_ = fmaps_.reshape(B, T, self.model.latent_dim, h // self.model.stride, w // self.model.stride)
             self.cached_feat = fmaps_
