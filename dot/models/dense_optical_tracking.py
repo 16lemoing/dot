@@ -55,14 +55,15 @@ class DenseOpticalTracker(nn.Module):
         video = data["video"]
         S = query_points.size(1)
         B, T, C, h, w = video.shape
-        assert B == 1
         H, W = self.resolution
 
         init = self.point_tracker(data, mode="tracks_at_motion_boundaries", **kwargs)["tracks"]
         init = torch.stack([init[..., 0] / (w - 1), init[..., 1] / (h - 1), init[..., 2]], dim=-1)
 
         if h != H or w != W:
-            video = F.interpolate(video[0], size=(H, W), mode="bilinear")[None]
+            video = video.reshape(B * T, C, h, w)
+            video = F.interpolate(video, size=(H, W), mode="bilinear")
+            video = video.reshape(B, T, C, H, W)
 
         feats = self.optical_flow_refiner({"video": video}, mode="feats", **kwargs)["feats"]
 
@@ -92,28 +93,32 @@ class DenseOpticalTracker(nn.Module):
                     flow[..., 1] = flow[..., 1] / (H - 1)
                 tracks_from_src.append(torch.cat([flow + grid, alpha[..., None]], dim=-1))
             tracks_from_src = torch.stack(tracks_from_src, dim=1)
-            cur = query_points[0, :, 0] == src_step
-            cur_points = query_points[0, cur]
-            cur_x = cur_points[..., 2] / (w - 1)
-            cur_y = cur_points[..., 1] / (h - 1)
-            cur_grid = torch.stack([cur_x, cur_y], dim=-1) * 2 - 1
-            cur_grid = repeat(cur_grid, "s c -> t s r c", t=T, r=1)
-            tracks_from_src = rearrange(tracks_from_src[0], "t h w c -> t c h w")
-            cur_tracks = F.grid_sample(tracks_from_src, cur_grid, align_corners=True, mode="bilinear")
-            cur_tracks = rearrange(cur_tracks[..., 0], "t c s -> t s c")
-            cur_tracks[..., 0] = cur_tracks[..., 0] * (w - 1)
-            cur_tracks[..., 1] = cur_tracks[..., 1] * (h - 1)
-            cur_tracks[..., 2] = (cur_tracks[..., 2] > 0).float()
-            tracks[:, :, cur] = cur_tracks
+            for b in range(B):
+                cur = query_points[b, :, 0] == src_step
+                if torch.any(cur):
+                    cur_points = query_points[b, cur]
+                    cur_x = cur_points[..., 2] / (w - 1)
+                    cur_y = cur_points[..., 1] / (h - 1)
+                    cur_grid = torch.stack([cur_x, cur_y], dim=-1) * 2 - 1
+                    cur_grid = repeat(cur_grid, "s c -> t s r c", t=T, r=1)
+                    cur_tracks = rearrange(tracks_from_src[b], "t h w c -> t c h w")
+                    cur_tracks = F.grid_sample(cur_tracks, cur_grid, align_corners=True, mode="bilinear")
+                    cur_tracks = rearrange(cur_tracks[..., 0], "t c s -> t s c")
+                    cur_tracks[..., 0] = cur_tracks[..., 0] * (w - 1)
+                    cur_tracks[..., 1] = cur_tracks[..., 1] * (h - 1)
+                    cur_tracks[..., 2] = (cur_tracks[..., 2] > 0).float()
+                    tracks[b, :, cur] = cur_tracks
         return {"tracks": tracks}
 
     def get_tracks_from_first_to_every_other_frame(self, data, **kwargs):
         video = data["video"]
         B, T, C, h, w = video.shape
-        assert B == 1
         H, W = self.resolution
+
         if h != H or w != W:
-            video = F.interpolate(video[0], size=(H, W), mode="bilinear")[None]
+            video = video.reshape(B * T, C, h, w)
+            video = F.interpolate(video, size=(H, W), mode="bilinear")
+            video = video.reshape(B, T, C, H, W)
 
         init = self.point_tracker(data, mode="tracks_at_motion_boundaries", **kwargs)["tracks"]
         init = torch.stack([init[..., 0] / (w - 1), init[..., 1] / (h - 1), init[..., 2]], dim=-1)

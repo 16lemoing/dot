@@ -43,7 +43,6 @@ class OpticalFlow(nn.Module):
         K = boundaries_size * 2 + 1
         D = boundaries_dilation
         B, _, H, W = src_frame.shape
-        assert B == 1
         reflect = torch.nn.ReflectionPad2d(K // 2)
         sobel_kernel = get_sobel_kernel(K).to(src_frame.device)
         flow, _ = self.model(src_frame, tgt_frame)
@@ -56,8 +55,8 @@ class OpticalFlow(nn.Module):
             boundaries = torch.nn.functional.max_pool2d(boundaries, kernel_size=D * 2, stride=1, padding=D)
             boundaries = boundaries[:, :, -H:, -W:]
         boundaries = boundaries[:, 0]
-        boundaries = boundaries - boundaries.min()
-        boundaries = boundaries / boundaries.max()
+        boundaries = boundaries - boundaries.reshape(B, -1).min(dim=1)[0].reshape(B, 1, 1)
+        boundaries = boundaries / boundaries.reshape(B, -1).max(dim=1)[0].reshape(B, 1, 1)
         boundaries = boundaries > boundaries_thresh
         return {"motion_boundaries": boundaries, "flow": flow}
 

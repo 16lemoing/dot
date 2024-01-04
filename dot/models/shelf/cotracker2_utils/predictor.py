@@ -139,6 +139,7 @@ class CoTrackerPredictor(torch.nn.Module):
                 self.support_grid_size, self.interp_shape, device=video.device
             )
             grid_pts = torch.cat([torch.zeros_like(grid_pts[:, :, :1]), grid_pts], dim=2)
+            grid_pts = grid_pts.repeat(B, 1, 1)
             queries = torch.cat([queries, grid_pts], dim=1)
 
         tracks, visibilities, __ = self.model.forward(
@@ -200,7 +201,7 @@ class CoTrackerPredictor(torch.nn.Module):
         inv_visibilities = inv_visibilities.flip(1)
         arange = torch.arange(video.shape[1], device=queries.device)[None, :, None]
 
-        mask = (arange < queries[None, :, :, 0]).unsqueeze(-1).repeat(1, 1, 1, 2)
+        mask = (arange < queries[:, None, :, 0]).unsqueeze(-1).repeat(1, 1, 1, 2)
 
         tracks[mask] = inv_tracks[mask]
         visibilities[mask[:, :, :, 0]] = inv_visibilities[mask[:, :, :, 0]]

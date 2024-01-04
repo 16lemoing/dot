@@ -38,13 +38,20 @@ def differentiate(mask):
 
 
 def sample_points(step, boundaries, num_samples):
-    H, W = boundaries.shape
-    boundary_points, _ = sample_mask_points(step, boundaries, num_samples // 2)
-    num_boundary_points = boundary_points.shape[0]
-    num_random_points = num_samples - num_boundary_points
-    random_points = sample_random_points(step, H, W, num_random_points)
-    random_points = random_points.to(boundary_points.device)
-    points = torch.cat((boundary_points, random_points), dim=0)
+    if boundaries.ndim == 3:
+        points = []
+        for boundaries_k in boundaries:
+            points_k = sample_points(step, boundaries_k, num_samples)
+            points.append(points_k)
+        points = torch.stack(points)
+    else:
+        H, W = boundaries.shape
+        boundary_points, _ = sample_mask_points(step, boundaries, num_samples // 2)
+        num_boundary_points = boundary_points.shape[0]
+        num_random_points = num_samples - num_boundary_points
+        random_points = sample_random_points(step, H, W, num_random_points)
+        random_points = random_points.to(boundary_points.device)
+        points = torch.cat((boundary_points, random_points), dim=0)
     return points
 
 

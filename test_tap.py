@@ -41,9 +41,9 @@ def main(args):
 
         if num_plot > 0:
             plot_count += 1
-            gt_video = to_rgb(gt["video"], "rgb", tracks=gt["tracks"], is_video=True)
+            gt_video = to_rgb(gt["video"][0], "rgb", tracks=gt["tracks"][0], is_video=True)
             write_video(gt_video, osp.join(args.result_path, f"{index}/gt"))
-            pred_video = to_rgb(gt["video"], "rgb", tracks=pred["tracks"], is_video=True)
+            pred_video = to_rgb(gt["video"][0], "rgb", tracks=pred["tracks"][0], is_video=True)
             write_video(pred_video, osp.join(args.result_path, f"{index}/pred"))
             if plot_count == num_plot:
                 break

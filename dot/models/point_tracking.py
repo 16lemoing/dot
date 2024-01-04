@@ -34,7 +34,6 @@ class PointTracker(nn.Module):
         video = data["video"]
         N, S = num_tracks, sim_tracks
         B, T, _, H, W = video.shape
-        assert B == 1
         assert N % S == 0
 
         # Define sampling strategy
@@ -73,8 +72,8 @@ class PointTracker(nn.Module):
                     pred = self.optical_flow_estimator(data, mode="motion_boundaries", **kwargs)
                     motion_boundaries[src_step] = pred["motion_boundaries"]
                 src_boundaries = motion_boundaries[src_step]
-                src_points.append(sample_points(src_step, src_boundaries[0], src_samples))
-            src_points = torch.cat(src_points, dim=0)[None]
+                src_points.append(sample_points(src_step, src_boundaries, src_samples))
+            src_points = torch.cat(src_points, dim=1)
             traj, vis = self.model(video, src_points, backward_tracking)
             tracks.append(torch.cat([traj, vis[..., None]], dim=-1))
         tracks = torch.cat(tracks, dim=2)
