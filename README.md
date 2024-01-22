@@ -75,6 +75,9 @@ unzip datasets/demo.zip -d datasets/
 
 ### :spaghetti: - Spaghetti 
 
+<details open>
+<summary>Spaghetti with last frame (static).</summary>
+
 Produce videos from the teaser figure.
 ```
 python demo.py --visualization_modes spaghetti_last_static --video_path orange.mp4
@@ -86,28 +89,47 @@ https://github.com/16lemoing/dot/assets/32103788/82b888b8-3bc4-4ce8-9278-1adf39e
 ```
 python demo.py --visualization_modes spaghetti_last_static --video_path umbrella.mp4
 ```
+</details>
+
+<details>
+<summary>Spaghetti from a mask on the first frame with first frame (static), and last frame.</summary>
 
 https://github.com/16lemoing/dot/assets/32103788/088cc2d6-0cd3-449c-a42a-58f4371427d0
 
 ```
 python demo.py --visualization_modes spaghetti_first_last_mask --video_path skateboard.mp4 --mask_path skateboard.png
 ```
+</details>
 
 ### :rainbow: - Overlay 
 
-https://github.com/16lemoing/dot/assets/32103788/7cc812c1-67fe-4710-9385-6675dd95cbf9
+<details open>
+<summary>Overlay with tracks from all the pixels in the first frame.</summary>
 
+https://github.com/16lemoing/dot/assets/32103788/7cc812c1-67fe-4710-9385-6675dd95cbf9
 
 ```
 python demo.py --visualization_modes overlay --video_path cartwheel.mp4
 ```
+</details>
 
+<details>
+<summary>Overlay with tracks reinitialized every 20 frames.</summary>
+
+```
+python demo.py --visualization_modes overlay --video_path cartwheel.mp4 --inference_mode tracks_from_every_cell_in_every_frame --cell_time_steps 20
+```
+</details>
+
+<details>
+<summary>Overlay with tracks from a mask on the first frame with occluded regions marked as white stripes.</summary>
 
 https://github.com/16lemoing/dot/assets/32103788/580ef7eb-4ae0-4174-9d62-9cfb62651c99
 
 ```
 python demo.py --visualization_modes overlay_stripes_mask --video_path varanus.mp4 --mask_path varanus.png
 ```
+</details>
 
 ## Evaluation
 

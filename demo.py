@@ -24,6 +24,7 @@ class Visualizer(nn.Module):
         self.spaghetti_grid = args.spaghetti_grid
         self.spaghetti_scale = args.spaghetti_scale
         self.spaghetti_every = args.spaghetti_every
+        self.spaghetti_dropout = args.spaghetti_dropout
 
     def forward(self, data, mode):
         if "overlay" in mode:
@@ -38,17 +39,24 @@ class Visualizer(nn.Module):
     def plot_overlay(self, data, mode):
         T, C, H, W = data["video"].shape
         mask = data["mask"] if "mask" in mode else torch.ones_like(data["mask"])
-        col = get_rainbow_colors(int(mask.sum())).cuda()
+        tracks = data["tracks"]
+
+        if tracks.ndim == 4:
+            col = get_rainbow_colors(int(mask.sum())).cuda()
+        else:
+            col = get_rainbow_colors(tracks.size(1)).cuda()
+
         video = []
         for tgt_step in tqdm(range(T), leave=False, desc="Plot target frame"):
             tgt_frame = data["video"][tgt_step]
             tgt_frame = tgt_frame.permute(1, 2, 0)
 
             # Plot rainbow points
-            tgt_pos = data["tracks"][tgt_step, ..., :2]
-            tgt_vis = data["tracks"][tgt_step, ..., 2]
-            tgt_pos = tgt_pos[mask]
-            tgt_vis = tgt_vis[mask]
+            tgt_pos = tracks[tgt_step, ..., :2]
+            tgt_vis = tracks[tgt_step, ..., 2]
+            if tracks.ndim == 4:
+                tgt_pos = tgt_pos[mask]
+                tgt_vis = tgt_vis[mask]
             rainbow, alpha = draw(tgt_pos, tgt_vis, col, H, W)
 
             # Plot rainbow points with white stripes in occluded regions
@@ -73,12 +81,20 @@ class Visualizer(nn.Module):
         bg_color = 1.
         T, C, H, W = data["video"].shape
         G, S, R, L = self.spaghetti_grid, self.spaghetti_scale, self.spaghetti_radius, self.spaghetti_length
+        D = self.spaghetti_dropout
 
         # Extract a grid of tracks
         mask = data["mask"] if "mask" in mode else torch.ones_like(data["mask"])
         mask = mask[G // 2:-G // 2 + 1:G, G // 2:-G // 2 + 1:G]
-        tracks = data["tracks"][:, G // 2:-G // 2 + 1:G, G // 2:-G // 2 + 1:G]
-        tracks = tracks[:, mask]
+        tracks = data["tracks"]
+        if tracks.ndim == 4:
+            tracks = tracks[:, G // 2:-G // 2 + 1:G, G // 2:-G // 2 + 1:G]
+            tracks = tracks[:, mask]
+        elif D > 0:
+            N = tracks.size(1)
+            assert D < 1
+            samples = np.sort(np.random.choice(N, int((1 - D) * N), replace=False))
+            tracks = tracks[:, samples]
         col = get_rainbow_colors(tracks.size(1)).cuda()
 
         # Densify tracks over temporal axis
@@ -164,12 +180,13 @@ def translation(frame, dx, dy, pad_value):
 
 
 def spline_interpolation(x, length=10):
-    T, N, C = x.shape
-    x = x.view(T, -1).cpu().numpy()
-    original_time = np.arange(T)
-    cs = scipy.interpolate.CubicSpline(original_time, x)
-    new_time = np.linspace(original_time[0], original_time[-1], T * length)
-    x = torch.from_numpy(cs(new_time)).view(-1, N, C).float().cuda()
+    if length != 1:
+        T, N, C = x.shape
+        x = x.view(T, -1).cpu().numpy()
+        original_time = np.arange(T)
+        cs = scipy.interpolate.CubicSpline(original_time, x)
+        new_time = np.linspace(original_time[0], original_time[-1], T * length)
+        x = torch.from_numpy(cs(new_time)).view(-1, N, C).float().cuda()
     return x
 
 
@@ -273,11 +290,11 @@ def main(args):
     tracks_path = osp.join(args.result_path, "tracks.pth")
     create_folder(args.result_path)
 
-    video = read_video(osp.join(args.data_root, args.video_path), resolution=resolution).cuda()
+    video = read_video(osp.join(args.data_root, args.video_path), resolution=resolution).cuda() # , time_steps=20
 
     if not osp.exists(tracks_path) or args.recompute_tracks:
         with torch.no_grad():
-            pred = model({"video": video[None]}, mode="tracks_from_first_to_every_other_frame", **vars(args))
+            pred = model({"video": video[None]}, mode=args.inference_mode, **vars(args))
         tracks = pred["tracks"][0]
         if args.save_tracks:
             torch.save(tracks.cpu(), tracks_path)
@@ -295,11 +312,22 @@ def main(args):
         "tracks": tracks,
         "mask": mask
     }
+
     data = to_device(data, "cuda")
 
-    if args.rainbow_mode == "left_right":
+    if data["tracks"].ndim == 4 and args.rainbow_mode == "left_right":
         data["mask"] = data["mask"].permute(1, 0)
         data["tracks"] = data["tracks"].permute(0, 2, 1, 3)
+    elif data["tracks"].ndim == 3:
+        points = data["tracks"][0]
+        x, y = points[..., 0].long(), points[..., 1].long()
+        x, y = x - x.min(), y - y.min()
+        if args.rainbow_mode == "left_right":
+            idx = y + x * y.max()
+        else:
+            idx = x + y * x.max()
+        order = idx.argsort(dim=0)
+        data["tracks"] = data["tracks"][:, order]
 
     for mode in args.visualization_modes:
         visualizer(data, mode=mode)

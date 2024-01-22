@@ -4,6 +4,7 @@ from .base_options import BaseOptions, str2bool
 class DemoOptions(BaseOptions):
     def initialize(self, parser):
         BaseOptions.initialize(self, parser)
+        parser.add_argument("--inference_mode", type=str, default="tracks_from_first_to_every_other_frame")
         parser.add_argument("--visualization_modes", type=str, nargs="+", default=["overlay", "spaghetti_last_static"])
         parser.add_argument("--video_path", type=str, default="orange.mp4")
         parser.add_argument("--mask_path", type=str, default="orange.png")
@@ -17,5 +18,6 @@ class DemoOptions(BaseOptions):
         parser.add_argument("--spaghetti_grid", type=int, default=30)
         parser.add_argument("--spaghetti_scale", type=float, default=2)
         parser.add_argument("--spaghetti_every", type=int, default=10)
+        parser.add_argument("--spaghetti_dropout", type=float, default=0)
         parser.set_defaults(data_root="datasets/demo", name="demo", batch_size=1, height=480, width=856, num_tracks=8192)
         return parser

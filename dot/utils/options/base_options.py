@@ -47,6 +47,10 @@ class BaseOptions:
         parser.add_argument("--tracker_path", type=str, default="checkpoints/movi_f_cotracker2_patch_4_wind_8.pth")
         parser.add_argument("--sample_mode", type=str, default="all", choices=["all", "first", "last"])
 
+        # Dense optical tracker
+        parser.add_argument("--cell_size", type=int, default=1)
+        parser.add_argument("--cell_time_steps", type=int, default=20)
+
         # Interpolation
         parser.add_argument("--interpolation_version", type=str, default="torch3d", choices=["torch3d", "torch"])
         return parser
