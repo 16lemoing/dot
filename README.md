@@ -116,6 +116,8 @@ python demo.py --visualization_modes overlay --video_path cartwheel.mp4
 <details>
 <summary>Overlay with tracks reinitialized every 20 frames.</summary>
 
+https://github.com/16lemoing/dot/assets/32103788/c0581f9a-0508-423b-b4db-9ec1aca2320a
+
 ```
 python demo.py --visualization_modes overlay --video_path cartwheel.mp4 --inference_mode tracks_from_every_cell_in_every_frame --cell_time_steps 20
 ```
