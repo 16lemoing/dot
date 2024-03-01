@@ -22,6 +22,7 @@ class DenseOpticalTracker(nn.Module):
         super().__init__()
         self.point_tracker = PointTracker(height, width, tracker_config, tracker_path, estimator_config, estimator_path)
         self.optical_flow_refiner = OpticalFlow(height, width, refiner_config, refiner_path)
+        self.name = self.point_tracker.name + "_" + self.optical_flow_refiner.name
         self.resolution = [height, width]
 
     def forward(self, data, mode, **kwargs):

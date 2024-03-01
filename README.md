@@ -16,8 +16,9 @@
 - It enjoys the spatial consistency and runs at a comparable speed to optical flow techniques.
 
 ### News 📣
+- [March 1st, 2024] We now support TAPIR and BootsTAPIR: new SOTA on DAVIS!
+- [February 26th, 2024] DOT has been accepted to [CVPR 2024](https://cvpr.thecvf.com)!
 - [January 1st, 2024] We now support CoTracker2: DOT is up to 2x faster!
-
 
 ## Installation
 
@@ -43,7 +44,7 @@ pip install torch==2.0.1 torchvision==0.15.2
 ```
 Install inference dependencies.
 ```
-pip install tqdm matplotlib einops scipy timm lmdb av mediapy
+pip install tqdm matplotlib einops einshape scipy timm lmdb av mediapy
 ```
 
 [Optional] Install training dependencies.
@@ -57,13 +58,91 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
 ```
 </details>
 
-### Download Checkpoints
+## Model Zoo
+
+### Optical flow estimation
+*find motion boundaries*
+
+<table>
+  <tr>
+    <th colspan="1">Model</th>
+    <th colspan="1">Data</th>
+    <th colspan="2">Download</th>
+  </tr>
+  <tr>
+    <td>RAFT</td>
+    <td>Kubric-CVO</td>
+    <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/cvo_raft_patch_8.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/raft_patch_8.json">Config</a></td>
+  </tr>
+</table>
+
+### Point tracking initialization
+*track sparse queries, half at motion boundaries, half randomly*
+
+<table>
+  <tr>
+    <th colspan="1">Model</th>
+    <th colspan="1">Data</th>
+    <th colspan="2">Download</th>
+  </tr>
+  <tr>
+    <td>CoTracker</td>
+    <td>Kubric-MOViF</td>
+    <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker_patch_4_wind_8.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/cotracker_patch_4_wind_8.json">Config</a></td>
+  </tr>
+  <tr>
+    <td>CoTracker2</td>
+    <td>Kubric-MOViF</td>
+    <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker2_patch_4_wind_8.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/cotracker2_patch_4_wind_8.json">Config</a></td>
+  </tr>
+  <tr>
+    <td>TAPIR</td>
+    <td>Kubric-Panning-MOViE</td>
+    <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_tapir.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/tapir.json">Config</a></td>
+  </tr>
+  <tr>
+    <td>BootsTAPIR</td>
+    <td>Kubric-Panning-MOViE + Real data</td>
+    <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_plus_bootstapir.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/bootstapir.json">Config</a></td>
+  </tr>
+</table>
+
+### Optical flow refinement
+*get dense motion from sparse point tracks*
+
+<table>
+  <tr>
+    <th colspan="1">Model</th>
+    <th colspan="1">Input</th>
+    <th colspan="1">Data</th>
+    <th colspan="2">Download</th>
+  </tr>
+  <tr>
+    <td>RAFT</td>
+    <td>CoTracker</td>
+    <td>Kubric-MOViF</td>
+    <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/movi_f_raft_patch_4_alpha.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/raft_patch_4_alpha.json">Config</a></td>
+  </tr>
+</table>
+
+<details>
+<summary>Command line to download all checkpoints.</summary>
+
 ```
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/cvo_raft_patch_8.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_raft_patch_4_alpha.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker_patch_4_wind_8.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker2_patch_4_wind_8.pth
+wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_tapir.pth
+wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_plus_bootstapir.pth
 ```
+</details>
 
 ## Demo
 
@@ -73,7 +152,7 @@ wget -P datasets https://huggingface.co/16lemoing/dot/resolve/main/demo.zip
 unzip datasets/demo.zip -d datasets/
 ```
 
-### :spaghetti: - Spaghetti 
+### Spaghetti :spaghetti:
 
 <details open>
 <summary>Spaghetti with last frame (static).</summary>
@@ -101,7 +180,7 @@ python demo.py --visualization_modes spaghetti_first_last_mask --video_path skat
 ```
 </details>
 
-### :rainbow: - Overlay 
+###  Overlay :rainbow:
 
 <details open>
 <summary>Overlay with tracks from all the pixels in the first frame.</summary>
@@ -109,7 +188,7 @@ python demo.py --visualization_modes spaghetti_first_last_mask --video_path skat
 https://github.com/16lemoing/dot/assets/32103788/7cc812c1-67fe-4710-9385-6675dd95cbf9
 
 ```
-python demo.py --visualization_modes overlay --video_path cartwheel.mp4
+python demo.py --visualization_modeovis overlay --video_path cartwheel.mp4
 ```
 </details>
 
@@ -164,14 +243,14 @@ python test_cvo.py --split {clean|final|extended}
 python test_tap.py --split {davis|kinetics|rgb_stacking}
 ```
 
-### Benchmarking
+## Benchmarking
 
-Results reproduced with this codebase on **Kubric-CVO**.
+### Kubric-CVO
 
 <details>
 <summary>Detailed metrics.</summary>
 
-We compute the dense motion between the first and last frames of videos and report:
+We compute the dense motion between the first and last frames of videos, and report:
 * the end point error (EPE) of flows
 * the intersection over union (IoU) of occluded regions
 * the average inference time per video (in seconds) on a NVIDIA V100 GPU
@@ -181,22 +260,166 @@ We compute the dense motion between the first and last frames of videos and repo
 <summary>Command line for each method.</summary>
 
 ```
+python test_cvo.py --split {final|extended} --model pt --tracker_config configs/tapir.json --tracker_path checkpoints/panning_movi_e_tapir.pth
+python test_cvo.py --split {final|extended} --model pt --tracker_config configs/bootstapir.json --tracker_path checkpoints/panning_movi_e_plus_bootstapir.pth
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
 python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
-python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
 ```
 </details>
 
-| Method                   | EPE &darr;         | IoU &uarr;         | Time &darr;         |
-|:-------------------------|:------------------:|:------------------:|:-------------------:|
-| CoTracker                | 1.45 / 5.10        | 75.0 / 70.3        | 177 / 1289          |
-| CoTracker2               | 1.47 / 5.45        | 77.9 / 69.2        | 80.2 / 865          |
-| DOT* (Cotracker + RAFT)  | 1.38 / **4.97**    | 80.2 / **71.2**    | 1.57 / 10.3         |
-| DOT* (Cotracker2 + RAFT) | **1.37** / 5.11    | **80.3** / 71.1    | **0.82** / **7.02** |
-|                          | _final / extended_ | _final / extended_ | _final / extended_  |
+<table>
+  <tr>
+    <th colspan="1" rowspan="2">Method</th>
+    <th colspan="3">Final</th>
+    <th colspan="3">Extended</th>
+  </tr>
+  <tr>
+    <td>EPE &darr;</td>
+    <td>IoU &uarr;</td>
+    <td>Time &darr;</td>
+    <td>EPE &darr;</td>
+    <td>IoU &uarr;</td>
+    <td>Time &darr;</td>
+  </tr>
+  <tr>
+    <td>TAPIR</td>
+    <td>4.59</td>
+    <td>73.8</td>
+    <td>129</td>
+    <td>22.6</td>
+    <td>68.6</td>
+    <td><u>811</u></td>
+  </tr>
+  <tr>
+    <td>BootsTAPIR</td>
+    <td>4.17</td>
+    <td>74.9</td>
+    <td>142</td>
+    <td>25.3</td>
+    <td>68.1</td>
+    <td>892</td>
+  </tr>
+  <tr>
+    <td>CoTracker</td>
+    <td><u>1.45</u></td>
+    <td>75.0</td>
+    <td>177</td>
+    <td><u>5.10</u></td>
+    <td><u>70.3</u></td>
+    <td>1289</td>
+  </tr>
+  <tr>
+    <td>CoTracker2</td>
+    <td>1.47</td>
+    <td><u>77.9</u></td>
+    <td><u>80.2</u></td>
+    <td>5.45</td>
+    <td>69.2</td>
+    <td>865</td>
+  </tr>
+  <tr>
+    <td>DOT* (Cotracker + RAFT)</td>
+    <td><b>1.38</b></td>
+    <td><b>80.2</b></td>
+    <td><b>1.57</b></td>
+    <td><b>4.97</b></td>
+    <td><b>71.2</b></td>
+    <td><b>10.3</b></td>
+  </tr>
+</table>
 
 _* results obtained using N=2048 initial tracks, other speed / performance trade-offs are possible by using different values for N._
+
+### TAP
+
+<details>
+<summary>Detailed metrics.</summary>
+
+We compute the dense motion between the query frames (query first mode) and every other frame of videos, and report for ground truth trajectories:
+* the average jaccard (AJ)
+* the average proportion of points within a threshold (&lt;&delta;)
+* the occlusion accuracy (OA)
+* the average inference time per video (in seconds) on a NVIDIA V100 GPU
+</details>
+
+<details>
+<summary>Command line for each method.</summary>
+
+```
+python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
+python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/tapir.json --tracker_path checkpoints/panning_movi_e_tapir.pth
+python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/bootstapir.json --tracker_path checkpoints/panning_movi_e_plus_bootstapir.pth
+```
+</details>
+
+
+
+<table>
+  <tr>
+    <th colspan="1" rowspan="2">Method</th>
+    <th colspan="4">DAVIS</th>
+    <th colspan="4">RGB-Stacking</th>
+  </tr>
+  <tr>
+    <td>AJ &uarr;</td>
+    <td>OA &uarr;</td>
+    <td>&lt;&delta; &uarr;</td>
+    <td>Time &darr;</td>
+    <td>AJ &uarr;</td>
+    <td>OA &uarr;</td>
+    <td>&lt;&delta; &uarr;</td>
+    <td>Time &darr;</td>
+  </tr>
+  <tr>
+    <td>DOT* (Cotracker + RAFT)</td>
+    <td>61.2</td>
+    <td>88.8</td>
+    <td>74.9</td>
+    <td>85.7</td>
+    <td><b>77.2</b></td>
+    <td><b>93.3</b></td>
+    <td><b>87.7</b></td>
+    <td>270</td>
+  </tr>
+  <tr>
+    <td>DOT* (Cotracker2 + RAFT)</td>
+    <td>61.2</td>
+    <td><u>89.7</u></td>
+    <td>75.3</td>
+    <td>99.1</td>
+    <td><u>77.2</u></td>
+    <td><u>92.6</u></td>
+    <td><u>87.1</u></td>
+    <td>330</td>
+  </tr>
+  <tr>
+    <td>DOT* (TAPIR + RAFT)</td>
+    <td><u>61.6</u></td>
+    <td>89.5</td>
+    <td><u>75.4</u></td>
+    <td><b>39.5</b></td>
+    <td>65.7</td>
+    <td>89.1</td>
+    <td>81.9</td>
+    <td><b>105</b></td>
+  </tr>
+  <tr>
+    <td>DOT* (BootsTAPIR + RAFT)</td>
+    <td><b>62.8</b></td>
+    <td><b>90.2</b></td>
+    <td><b>76.8</b></td>
+    <td><u>42.3</u></td>
+    <td>71.0</td>
+    <td>90.7</td>
+    <td>85.2</td>
+    <td><u>112</u></td>
+  </tr>
+</table>
+
+_* results obtained using N=8192 initial tracks, other speed / performance trade-offs are possible by using different values for N._
+
 
 ## Training
 
@@ -215,7 +438,7 @@ wget -P datasets/kubric/movi_f https://huggingface.co/datasets/16lemoing/movi_f/
 
 Unzip data.
 ```
-zip -F video_part.zip --out datasets/kubric/movi_f/video.zip
+zip -F datasets/kubric/movi_f/video_part.zip --out datasets/kubric/movi_f/video.zip
 unzip datasets/kubric/movi_f/video.zip -d datasets/kubric/movi_f/
 unzip datasets/kubric/movi_f/ground_truth.zip -d datasets/kubric/movi_f/
 unzip datasets/kubric/movi_f/cotracker.zip -d datasets/kubric/movi_f/
@@ -268,10 +491,10 @@ We want to thank [CoTracker](https://github.com/facebookresearch/co-tracker), [R
 ## Citation
 Please note that any use of the code in a publication must explicitly refer to:
 ```
-@article{lemoing2023dense,
-  title={Dense Optical Tracking: Connecting the Dots},
-  author={Guillaume Le Moing and Jean Ponce and Cordelia Schmid},
-  journal={arXiv preprint},
-  year={2023}
+@inproceedings{lemoing2024dense,
+  title = {Dense Optical Tracking: Connecting the Dots},
+  author = {Le Moing, Guillaume and Ponce, Jean and Schmid, Cordelia},
+  year = {2024},
+  booktitle = {CVPR}
 }
 ```

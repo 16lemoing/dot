@@ -60,7 +60,7 @@ def extract_movi_f(data_root, download_path, video_indices):
 def save_tracks(data_root, video_indices):
     model = create_model(args).cuda()
     for video_idx in tqdm(video_indices):
-        track_path = os.path.join(data_root, "cotracker")
+        track_path = os.path.join(data_root, model.name)
         video_path = os.path.join(data_root, "video", str(video_idx))
         create_folder(track_path, exist_ok=True)
         if os.path.exists(os.path.join(track_path, str(video_idx) + ".npy")):

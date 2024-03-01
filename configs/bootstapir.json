@@ -1,0 +1,6 @@
+{
+  "name": "bootstapir",
+  "pyramid_level": 1,
+  "softmax_temperature": 10,
+  "extra_convs": true
+}

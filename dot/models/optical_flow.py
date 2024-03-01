@@ -15,6 +15,7 @@ class OpticalFlow(nn.Module):
         model_args = read_config(config)
         model_dict = {"raft": RAFT}
         self.model = model_dict[model_args.name](model_args)
+        self.name = model_args.name
         if load_path is not None:
             device = next(self.model.parameters()).device
             self.model.load_state_dict(torch.load(load_path, map_location=device))

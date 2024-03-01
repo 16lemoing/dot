@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 from .optical_flow import OpticalFlow
-from .shelf import CoTracker, CoTracker2
+from .shelf import CoTracker, CoTracker2, Tapir
 from dot.utils.io import read_config
 from dot.utils.torch import sample_points, sample_mask_points, get_grid
 
@@ -14,12 +14,15 @@ class PointTracker(nn.Module):
         model_args = read_config(tracker_config)
         model_dict = {
             "cotracker": CoTracker,
-            "cotracker2": CoTracker2
+            "cotracker2": CoTracker2,
+            "tapir": Tapir,
+            "bootstapir": Tapir
         }
+        self.name = model_args.name
         self.model = model_dict[model_args.name](model_args)
         if tracker_path is not None:
             device = next(self.model.parameters()).device
-            self.model.load_state_dict(torch.load(tracker_path, map_location=device))
+            self.model.load_state_dict(torch.load(tracker_path, map_location=device), strict=False)
         self.optical_flow_estimator = OpticalFlow(height, width, estimator_config, estimator_path)
 
     def forward(self, data, mode, **kwargs):
@@ -61,6 +64,7 @@ class PointTracker(nn.Module):
         # Track batches of points
         tracks = []
         motion_boundaries = {}
+        cache_features = True
         for _ in tqdm(range(N // S), desc="Track batch of points", leave=False):
             src_points = []
             for src_step, src_samples in enumerate(samples_per_step):
@@ -74,8 +78,9 @@ class PointTracker(nn.Module):
                 src_boundaries = motion_boundaries[src_step]
                 src_points.append(sample_points(src_step, src_boundaries, src_samples))
             src_points = torch.cat(src_points, dim=1)
-            traj, vis = self.model(video, src_points, backward_tracking)
+            traj, vis = self.model(video, src_points, backward_tracking, cache_features)
             tracks.append(torch.cat([traj, vis[..., None]], dim=-1))
+            cache_features = False
         tracks = torch.cat(tracks, dim=2)
 
         if flip:
@@ -90,7 +95,7 @@ class PointTracker(nn.Module):
         B, T, C, H, W = video.shape
         S = sim_tracks
         backward_tracking = False
-        cache_features = False
+        cache_features = True
         flow = get_grid(H, W, shape=[B]).cuda()
         flow[..., 0] = flow[..., 0] * (W - 1)
         flow[..., 1] = flow[..., 1] * (H - 1)

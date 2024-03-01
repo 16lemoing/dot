@@ -1,0 +1,6 @@
+{
+  "name": "tapir",
+  "pyramid_level": 0,
+  "softmax_temperature": 20,
+  "extra_convs": false
+}
