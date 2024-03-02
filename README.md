@@ -320,7 +320,7 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
     <td>865</td>
   </tr>
   <tr>
-    <td>DOT* (Cotracker + RAFT)</td>
+    <td>DOT* (CoTracker + RAFT)</td>
     <td><ins>1.38</ins></td>
     <td><ins>80.2</ins></td>
     <td><ins>1.57</ins></td>
@@ -329,7 +329,7 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
     <td><ins>10.3</ins></td>
   </tr>
   <tr>
-    <td>DOT* (Cotracker2 + RAFT)</td>
+    <td>DOT* (CoTracker2 + RAFT)</td>
     <td><b>1.37</b></td>
     <td><b>80.3</b></td>
     <td><b>0.82</b></td>
@@ -383,7 +383,7 @@ python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config con
     <td>Time &darr;</td>
   </tr>
   <tr>
-    <td>DOT* (Cotracker + RAFT)</td>
+    <td>DOT* (CoTracker + RAFT)</td>
     <td>61.2</td>
     <td>88.8</td>
     <td>74.9</td>
@@ -394,7 +394,7 @@ python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config con
     <td>270</td>
   </tr>
   <tr>
-    <td>DOT* (Cotracker2 + RAFT)</td>
+    <td>DOT* (CoTracker2 + RAFT)</td>
     <td>61.2</td>
     <td><ins>89.7</ins></td>
     <td>75.3</td>
@@ -430,7 +430,7 @@ python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config con
 
 _* results obtained using N=8192 initial tracks, other speed / performance trade-offs are possible by using different values for N._
 
-_** in this case, TAPIR and BootsTAPIR are faster than Cotracker and Cotracker2 since they operate directly at 256x256 resolution while the latter resize videos to a higher resolution._
+_** in this case, TAPIR and BootsTAPIR are faster than CoTracker and CoTracker2 since they operate directly at 256x256 resolution while the latter resize videos to a higher resolution._
 
 ## Training
 
