@@ -265,6 +265,7 @@ python test_cvo.py --split {final|extended} --model pt --tracker_config configs/
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
 python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
+python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
 ```
 </details>
 
@@ -289,7 +290,7 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
     <td>129</td>
     <td>22.6</td>
     <td>68.6</td>
-    <td><u>811</u></td>
+    <td>811</td>
   </tr>
   <tr>
     <td>BootsTAPIR</td>
@@ -302,30 +303,39 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
   </tr>
   <tr>
     <td>CoTracker</td>
-    <td><u>1.45</u></td>
+    <td>1.45</td>
     <td>75.0</td>
     <td>177</td>
-    <td><u>5.10</u></td>
-    <td><u>70.3</u></td>
+    <td>5.10</td>
+    <td>70.3</td>
     <td>1289</td>
   </tr>
   <tr>
     <td>CoTracker2</td>
     <td>1.47</td>
-    <td><u>77.9</u></td>
-    <td><u>80.2</u></td>
+    <td>77.9</td>
+    <td>80.2</td>
     <td>5.45</td>
     <td>69.2</td>
     <td>865</td>
   </tr>
   <tr>
     <td>DOT* (Cotracker + RAFT)</td>
-    <td><b>1.38</b></td>
-    <td><b>80.2</b></td>
-    <td><b>1.57</b></td>
+    <td><ins>1.38</ins></td>
+    <td><ins>80.2</ins></td>
+    <td><ins>1.57</ins></td>
     <td><b>4.97</b></td>
     <td><b>71.2</b></td>
-    <td><b>10.3</b></td>
+    <td><ins>10.3</ins></td>
+  </tr>
+  <tr>
+    <td>DOT* (Cotracker2 + RAFT)</td>
+    <td><b>1.37</b></td>
+    <td><b>80.3</b></td>
+    <td><b>0.82</b></td>
+    <td><ins>5.11</ins></td>
+    <td><ins>71.1</ins></td>
+    <td><b>7.02</b></td>
   </tr>
 </table>
 
@@ -386,19 +396,19 @@ python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config con
   <tr>
     <td>DOT* (Cotracker2 + RAFT)</td>
     <td>61.2</td>
-    <td><u>89.7</u></td>
+    <td><ins>89.7</ins></td>
     <td>75.3</td>
     <td>99.1</td>
-    <td><u>77.2</u></td>
-    <td><u>92.6</u></td>
-    <td><u>87.1</u></td>
+    <td><ins>77.2</ins></td>
+    <td><ins>92.6</ins></td>
+    <td><ins>87.1</ins></td>
     <td>330</td>
   </tr>
   <tr>
-    <td>DOT* (TAPIR + RAFT)</td>
-    <td><u>61.6</u></td>
+    <td>DOT* (TAPIR** + RAFT)</td>
+    <td><ins>61.6</ins></td>
     <td>89.5</td>
-    <td><u>75.4</u></td>
+    <td><ins>75.4</ins></td>
     <td><b>39.5</b></td>
     <td>65.7</td>
     <td>89.1</td>
@@ -406,20 +416,21 @@ python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config con
     <td><b>105</b></td>
   </tr>
   <tr>
-    <td>DOT* (BootsTAPIR + RAFT)</td>
+    <td>DOT* (BootsTAPIR** + RAFT)</td>
     <td><b>62.8</b></td>
     <td><b>90.2</b></td>
     <td><b>76.8</b></td>
-    <td><u>42.3</u></td>
+    <td><ins>42.3</ins></td>
     <td>71.0</td>
     <td>90.7</td>
     <td>85.2</td>
-    <td><u>112</u></td>
+    <td><ins>112</ins></td>
   </tr>
 </table>
 
 _* results obtained using N=8192 initial tracks, other speed / performance trade-offs are possible by using different values for N._
 
+_** in this case, TAPIR and BootsTAPIR are faster than Cotracker and Cotracker2 since they operate directly at 256x256 resolution while the latter resize videos to a higher resolution._
 
 ## Training
 
