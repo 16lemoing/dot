@@ -8,23 +8,31 @@ from torch.utils import data
 from dot.utils.io import read_video, read_tracks
 
 
-def create_point_tracking_dataset(args, split="train", num_workers=None, verbose=False):
+def create_point_tracking_dataset(args, batch_size=1, split="train", num_workers=None, verbose=False):
     dataset = Dataset(args, split, verbose)
-    dataloader = DataLoader(args, dataset, split, num_workers)
+    dataloader = DataLoader(args, dataset, batch_size, split, num_workers)
     return dataloader
 
 
 class DataLoader:
-    def __init__(self, args, dataset, split="train", num_workers=None):
+    def __init__(self, args, dataset, batch_size=1, split="train", num_workers=None):
         num_workers = args.num_workers if num_workers is None else num_workers
-        shuffle = split == "train"
-        self.loader = data.DataLoader(dataset, batch_size=args.batch_size, num_workers=num_workers, shuffle=shuffle)
+        is_train = split == "train"
+        self.sampler = data.distributed.DistributedSampler(dataset, args.world_size, args.rank) if is_train else None
+        self.loader = data.DataLoader(
+            dataset,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            sampler=self.sampler,
+        )
         self.epoch = -1
         self.reinit()
 
     def reinit(self):
-        self.iter = iter(self.loader)
         self.epoch += 1
+        if self.sampler:
+            self.sampler.set_epoch(self.epoch)
+        self.iter = iter(self.loader)
 
     def next(self):
         try:

@@ -110,8 +110,20 @@ def main(rank, args):
     logger = Logger(args) if args.rank == 0 else None
 
     # Prepare data
-    train_dataset = create_point_tracking_dataset(args, split="train", verbose=args.rank == 0)
-    valid_dataset = create_point_tracking_dataset(args, split="valid", verbose=args.rank == 0, num_workers=1)
+    train_dataset = create_point_tracking_dataset(
+        args,
+        batch_size=args.batch_size,
+        split="train",
+        verbose=args.rank == 0
+    )
+    if args.rank == 0:
+        valid_dataset = create_point_tracking_dataset(
+            args,
+            batch_size=args.batch_size_valid,
+            split="valid",
+            verbose=args.rank == 0,
+            num_workers=1
+        )
 
     # Load model and optimizer
     model = create_model(args).cuda()
@@ -129,18 +141,17 @@ def main(rank, args):
             checkpoint(model, optimizer, args.checkpoint_path, "last")
 
         if args.valid_iter > 0 and global_iter % args.valid_iter == 0:
-            model.eval()
-
-            losses = []
-            with torch.no_grad():
-                for _ in range(args.num_valid_batches):
-                    losses.append(step(valid_dataset, model, None, None, global_iter, args))
-                valid_dataset.reinit()  # Make sure we always use the same validation data
-
-            loss = torch.stack(losses).mean()
-            loss = reduce(loss, args.world_size)
-
             if args.rank == 0:
+                model.eval()
+
+                losses = []
+                with torch.no_grad():
+                    for _ in range(args.num_valid_batches):
+                        losses.append(step(valid_dataset, model.module, None, None, global_iter, args))
+                    valid_dataset.reinit()  # Make sure we always use the same validation data
+
+                loss = torch.stack(losses).mean()
+
                 status = ""
                 if min_loss is None or loss < min_loss:
                     min_loss = loss
@@ -149,6 +160,8 @@ def main(rank, args):
                 logger.log_scalar("valid/loss", loss.item(), global_iter)
                 print(f"[I{global_iter}/{args.train_iter}] Validation loss: {loss:.3E} {status}")
                 model.train()
+
+            dist.barrier()
 
     cleanup()
 

@@ -14,7 +14,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument("--log_factor", type=float, default=1.)
         parser.add_argument("--print_iter", type=int, default=100)
         parser.add_argument("--valid_iter", type=int, default=10000)
-        parser.add_argument("--num_valid_batches", type=int, default=8)
+        parser.add_argument("--num_valid_batches", type=int, default=24)
         parser.add_argument("--save_iter", type=int, default=1000)
         parser.add_argument("--lr", type=float, default=0.0001)
         parser.add_argument("--world_size", type=int, default=1)
