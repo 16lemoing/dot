@@ -61,7 +61,7 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
 ## Model Zoo
 
 ### Optical flow estimation
-*find motion boundaries*
+&rarr; *find motion boundaries*
 
 <table>
   <tr>
@@ -78,7 +78,7 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
 </table>
 
 ### Point tracking initialization
-*track sparse queries, half at motion boundaries, half randomly*
+&rarr; *track sparse queries, half at motion boundaries, half randomly*
 
 <table>
   <tr>
@@ -113,7 +113,7 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
 </table>
 
 ### Optical flow refinement
-*get dense motion from sparse point tracks*
+&rarr; *get dense motion from sparse point tracks*
 
 <table>
   <tr>
@@ -269,6 +269,16 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
 ```
 </details>
 
+<details>
+<summary>Comments.</summary>
+We run DOT using N=2048 initial tracks, other speed / performance trade-offs are possible by using different values for N.
+</details>
+
+<hr>
+
+<details open>
+<summary>CVO.</summary>
+
 <table>
   <tr>
     <th colspan="1" rowspan="2">Method</th>
@@ -320,7 +330,7 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
     <td>865</td>
   </tr>
   <tr>
-    <td>DOT* (CoTracker + RAFT)</td>
+    <td>DOT (CoTracker + RAFT)</td>
     <td><ins>1.38</ins></td>
     <td><ins>80.2</ins></td>
     <td><ins>1.57</ins></td>
@@ -329,7 +339,7 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
     <td><ins>10.3</ins></td>
   </tr>
   <tr>
-    <td>DOT* (CoTracker2 + RAFT)</td>
+    <td>DOT (CoTracker2 + RAFT)</td>
     <td><b>1.37</b></td>
     <td><b>80.3</b></td>
     <td><b>0.82</b></td>
@@ -338,8 +348,7 @@ python test_cvo.py --split {final|extended} --model dot --tracker_config configs
     <td><b>7.02</b></td>
   </tr>
 </table>
-
-_* results obtained using N=2048 initial tracks, other speed / performance trade-offs are possible by using different values for N._
+</details>
 
 ### TAP
 
@@ -357,20 +366,28 @@ We compute the dense motion between the query frames (query first mode) and ever
 <summary>Command line for each method.</summary>
 
 ```
-python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
-python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
-python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/tapir.json --tracker_path checkpoints/panning_movi_e_tapir.pth
-python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config configs/bootstapir.json --tracker_path checkpoints/panning_movi_e_plus_bootstapir.pth
+python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
+python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/tapir.json --tracker_path checkpoints/panning_movi_e_tapir.pth
+python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/bootstapir.json --tracker_path checkpoints/panning_movi_e_plus_bootstapir.pth
 ```
 </details>
 
+<details>
+<summary>Comments.</summary>
+We run DOT using N=8192 initial tracks, other speed / performance trade-offs are possible by using different values for N.
+Here, TAPIR and BootsTAPIR are faster than CoTracker and CoTracker2 since they operate directly at 256x256 resolution while the latter resize videos to a higher resolution.
+</details>
 
+<hr>
 
+<details open>
+<summary>DAVIS.</summary>
 <table>
   <tr>
     <th colspan="1" rowspan="2">Method</th>
-    <th colspan="4">DAVIS</th>
-    <th colspan="4">RGB-Stacking</th>
+    <th colspan="4">First</th>
+    <th colspan="4">Strided</th>
   </tr>
   <tr>
     <td>AJ &uarr;</td>
@@ -383,54 +400,172 @@ python test_tap.py --split {davis|rgb_stacking} --model dot --tracker_config con
     <td>Time &darr;</td>
   </tr>
   <tr>
-    <td>DOT* (CoTracker + RAFT)</td>
+    <th colspan="9">Published results</th>
+  </tr>
+  <tr>
+    <td>OmniMotion</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>51.7</td>
+    <td>85.3</td>
+    <td>67.5</td>
+    <td>~32400</td>
+  </tr>
+  <tr>
+    <td>DinoTracker</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>62.3</td>
+    <td>87.5</td>
+    <td>78.2</td>
+    <td>~5760</td>
+  </tr>
+  <tr>
+    <th colspan="9">This repo's results</th>
+  </tr>
+  <tr>
+    <td>DOT (CoTracker + RAFT)</td>
     <td>61.2</td>
     <td>88.8</td>
     <td>74.9</td>
     <td>85.7</td>
-    <td><b>77.2</b></td>
-    <td><b>93.3</b></td>
-    <td><b>87.7</b></td>
-    <td>270</td>
+    <td>66.1</td>
+    <td>90.0</td>
+    <td>79.4</td>
+    <td>131</td>
   </tr>
   <tr>
-    <td>DOT* (CoTracker2 + RAFT)</td>
+    <td>DOT (CoTracker2 + RAFT)</td>
     <td>61.2</td>
     <td><ins>89.7</ins></td>
     <td>75.3</td>
     <td>99.1</td>
-    <td><ins>77.2</ins></td>
-    <td><ins>92.6</ins></td>
-    <td><ins>87.1</ins></td>
-    <td>330</td>
+    <td>67.7</td>
+    <td>91.2</td>
+    <td>80.6</td>
+    <td>141</td>
   </tr>
   <tr>
-    <td>DOT* (TAPIR** + RAFT)</td>
+    <td>DOT (TAPIR + RAFT)</td>
     <td><ins>61.6</ins></td>
     <td>89.5</td>
     <td><ins>75.4</ins></td>
     <td><b>39.5</b></td>
-    <td>65.7</td>
-    <td>89.1</td>
-    <td>81.9</td>
-    <td><b>105</b></td>
+    <td><ins>67.3</ins></td>
+    <td><ins>91.0</ins></td>
+    <td><ins>79.9</ins></td>
+    <td><ins>88.9</ins></td>
   </tr>
   <tr>
-    <td>DOT* (BootsTAPIR** + RAFT)</td>
+    <td>DOT (BootsTAPIR + RAFT)</td>
     <td><b>62.8</b></td>
     <td><b>90.2</b></td>
     <td><b>76.8</b></td>
     <td><ins>42.3</ins></td>
+    <td><b>68.5</b></td>
+    <td><b>91.7</b></td>
+    <td><b>81.3</b></td>
+    <td><b>90.6</b></td>
+  </tr>
+</table>
+</details>
+
+<details>
+<summary>RGB-Stacking.</summary>
+<table>
+  <tr>
+    <th colspan="1" rowspan="2">Method</th>
+    <th colspan="4">First</th>
+    <th colspan="4">Strided</th>
+  </tr>
+  <tr>
+    <td>AJ &uarr;</td>
+    <td>OA &uarr;</td>
+    <td>&lt;&delta; &uarr;</td>
+    <td>Time &darr;</td>
+    <td>AJ &uarr;</td>
+    <td>OA &uarr;</td>
+    <td>&lt;&delta; &uarr;</td>
+    <td>Time &darr;</td>
+  </tr>
+  <tr>
+    <th colspan="9">Published results</th>
+  </tr>
+  <tr>
+    <td>OmniMotion</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>77.5</td>
+    <td>93.5</td>
+    <td>87.0</td>
+    <td>~32400</td>
+  </tr>
+  <tr>
+    <td>DinoTracker</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <th colspan="9">This repo's results</th>
+  </tr>
+  <tr>
+    <td>DOT (CoTracker + RAFT)</td>
+    <td><b>77.2</b></td>
+    <td><b>93.3</b></td>
+    <td><b>87.7</b></td>
+    <td>270</td>
+    <td><b>83.5</b></td>
+    <td><b>95.7</b></td>
+    <td><b>91.4</b></td>
+    <td>1014</td>
+  </tr>
+  <tr>
+    <td>DOT (CoTracker2 + RAFT)</td>
+    <td><ins>77.2</ins></td>
+    <td><ins>92.6</ins></td>
+    <td><ins>87.1</ins></td>
+    <td>330</td>
+    <td><ins>83.2</ins></td>
+    <td><ins>95.3</ins></td>
+    <td><ins>91.0</ins></td>
+    <td>1074</td>
+  </tr>
+  <tr>
+    <td>DOT (TAPIR + RAFT)</td>
+    <td>65.7</td>
+    <td>89.1</td>
+    <td>81.9</td>
+    <td><b>105</b></td>
+    <td>74.6</td>
+    <td>93.4</td>
+    <td>86.4</td>
+    <td><b>843</b></td>
+  </tr>
+  <tr>
+    <td>DOT (BootsTAPIR + RAFT)</td>
     <td>71.0</td>
     <td>90.7</td>
     <td>85.2</td>
     <td><ins>112</ins></td>
+    <td>79.7</td>
+    <td>94.7</td>
+    <td>89.6</td>
+    <td><ins>852</ins></td>
   </tr>
 </table>
-
-_* results obtained using N=8192 initial tracks, other speed / performance trade-offs are possible by using different values for N._
-
-_** in this case, TAPIR and BootsTAPIR are faster than CoTracker and CoTracker2 since they operate directly at 256x256 resolution while the latter resize videos to a higher resolution._
+</details>
 
 ## Training
 
@@ -497,7 +632,7 @@ We actively encourage contributions. Want to feature a cool application which bu
 
 ## Acknowledgments
 
-We want to thank [CoTracker](https://github.com/facebookresearch/co-tracker), [RAFT](https://github.com/princeton-vl/RAFT), [AccFlow](https://github.com/mulns/AccFlow), [TAP](https://github.com/google-deepmind/tapnet), and [Kubric](https://github.com/google-research/kubric) for publicly releasing their code, models and data.
+We want to thank [RAFT](https://github.com/princeton-vl/RAFT), [AccFlow](https://github.com/mulns/AccFlow), [TAP](https://github.com/google-deepmind/tapnet), [CoTracker](https://github.com/facebookresearch/co-tracker), [DinoTracker](https://github.com/AssafSinger94/dino-tracker), [OmniMotion](https://github.com/qianqianwang68/omnimotion) and [Kubric](https://github.com/google-research/kubric) for publicly releasing their code, models and data.
 
 ## Citation
 Please note that any use of the code in a publication must explicitly refer to:
