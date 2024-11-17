@@ -3,7 +3,7 @@ import torch
 from torch import nn
 
 from .optical_flow import OpticalFlow
-from .shelf import CoTracker, CoTracker2, Tapir
+from .shelf import CoTracker, CoTracker2, CoTracker3, Tapir
 from dot.utils.io import read_config
 from dot.utils.torch import sample_points, sample_mask_points, get_grid
 
@@ -15,6 +15,7 @@ class PointTracker(nn.Module):
         model_dict = {
             "cotracker": CoTracker,
             "cotracker2": CoTracker2,
+            "cotracker3": CoTracker3,
             "tapir": Tapir,
             "bootstapir": Tapir
         }
