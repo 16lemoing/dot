@@ -100,6 +100,12 @@ cd dot/utils/torch3d/ && python setup.py install && cd ../../..
     <td><a href="https://github.com/16lemoing/dot/blob/main/configs/cotracker2_patch_4_wind_8.json">Config</a></td>
   </tr>
   <tr>
+    <td>CoTracker3</td>
+    <td>Kubric-MOViF + Real data</td>
+    <td><a href="https://huggingface.co/facebook/cotracker3/resolve/main/scaled_offline.pth">Checkpoint</a></td>
+    <td><a href="https://github.com/16lemoing/dot/blob/main/configs/cotracker3_wind_60.json">Config</a></td>
+  </tr>
+  <tr>
     <td>TAPIR</td>
     <td>Kubric-Panning-MOViE</td>
     <td><a href="https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_tapir.pth">Checkpoint</a></td>
