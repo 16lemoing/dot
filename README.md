@@ -16,7 +16,7 @@
 - It enjoys the spatial consistency and runs at a comparable speed to optical flow techniques.
 
 ### News 📣
-- [November 19th, 2024] We now support CoTracker3! Thanks @yindaheng98 for the contribution.
+- [November 19th, 2024] We now support CoTracker3! Thanks [@yindaheng98](https://www.github.com/yindaheng98) for the contribution.
 - [March 1st, 2024] We now support TAPIR and BootsTAPIR: new SOTA on DAVIS!
 - [February 26th, 2024] DOT has been accepted to [CVPR 2024](https://cvpr.thecvf.com)!
 - [January 1st, 2024] We now support CoTracker2: DOT is up to 2x faster!
