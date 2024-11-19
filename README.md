@@ -139,6 +139,7 @@ wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/cvo_raft_p
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_raft_patch_4_alpha.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker_patch_4_wind_8.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/movi_f_cotracker2_patch_4_wind_8.pth
+wget -O checkpoints/movi_f_cotracker3_wind_60.pth https://huggingface.co/facebook/cotracker3/resolve/main/scaled_offline.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_tapir.pth
 wget -P checkpoints https://huggingface.co/16lemoing/dot/resolve/main/panning_movi_e_plus_bootstapir.pth
 ```
@@ -264,8 +265,10 @@ python test_cvo.py --split {final|extended} --model pt --tracker_config configs/
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/bootstapir.json --tracker_path checkpoints/panning_movi_e_plus_bootstapir.pth
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
 python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+python test_cvo.py --split {final|extended} --model pt --tracker_config configs/cotracker3_wind_60.json --tracker_path checkpoints/movi_f_cotracker3_wind_60.pth
 python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
 python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+python test_cvo.py --split {final|extended} --model dot --tracker_config configs/cotracker3_wind_60.json --tracker_path checkpoints/movi_f_cotracker3_wind_60.pth
 ```
 </details>
 
@@ -368,6 +371,7 @@ We compute the dense motion between the query frames (query first mode) and ever
 ```
 python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/cotracker_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker_patch_4_wind_8.pth
 python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/cotracker2_patch_4_wind_8.json --tracker_path checkpoints/movi_f_cotracker2_patch_4_wind_8.pth
+python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/cotracker3_wind_60.json --tracker_path checkpoints/movi_f_cotracker3_wind_60.pth
 python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/tapir.json --tracker_path checkpoints/panning_movi_e_tapir.pth
 python test_tap.py --split {davis|rgb_stacking} --query_mode {first|strided} --model dot --tracker_config configs/bootstapir.json --tracker_path checkpoints/panning_movi_e_plus_bootstapir.pth
 ```
